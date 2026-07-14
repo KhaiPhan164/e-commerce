@@ -450,124 +450,41 @@
     <script src="{{ url_for('static', filename='js/jquery.prettyPhoto.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 	<script>
-		// Vanilla JS cart handling: read rows from the rendered table, update UI and call backend via fetch
-		document.addEventListener('DOMContentLoaded', function () {
-			const cartBody = document.querySelector('.table.table-condensed tbody');
-			if (!cartBody) return;
+document.querySelector('.cart_info').addEventListener('click', async function(e) {
+	const button = e.target.closest('.cart-action');
 
-			function parsePrice(text) {
-				if (typeof text === 'number') return Number(text);
-				// remove any non-digit, non-dot, non-minus
-				const num = text.replace(/[^0-9.-]+/g, '');
-				return parseFloat(num) || 0;
-			}
+	if (!button) return;
 
-			function formatMoney(n) {
-				return '$' + n.toFixed(2);
-			}
+	e.preventDefault();
 
-			function recalcTotals() {
-				let subtotal = 0;
-				cartBody.querySelectorAll('tr').forEach(function (tr) {
-					const priceCell = tr.querySelector('.cart_price p');
-					const qtyInput = tr.querySelector('.cart_quantity_input');
-					const subtotalCell = tr.querySelector('.cart_total .cart_total_price');
-					if (!priceCell || !qtyInput || !subtotalCell) return;
-					const price = parsePrice(priceCell.textContent || priceCell.innerText);
-					const qty = parseInt(qtyInput.value, 10) || 0;
-					const rowTotal = price * qty;
-					subtotal += rowTotal;
-					subtotalCell.textContent = formatMoney(rowTotal);
-				});
+	const productId = button.dataset.productId;
+	const action = button.dataset.action;
 
-				// update summary spans
-				const tax = parseFloat((subtotal * 0.08).toFixed(2));
-				const shipping = subtotal >= 100 ? 0 : 5;
-				const grand = parseFloat((subtotal + tax + shipping).toFixed(2));
+	if (action === 'remove') {
+		const check = confirm('Xác nhận xoá sản phẩm khỏi giỏ hàng?');
 
-				const elSubtotal = document.getElementById('cart-subtotal');
-				const elTax = document.getElementById('cart-tax');
-				const elShipping = document.getElementById('cart-shipping');
-				const elGrand = document.getElementById('cart-grand');
+		if (!check) return;
+	}
 
-				if (elSubtotal) elSubtotal.textContent = formatMoney(subtotal);
-				if (elTax) elTax.textContent = formatMoney(tax);
-				if (elShipping) elShipping.textContent = shipping === 0 ? 'Free' : formatMoney(shipping);
-				if (elGrand) elGrand.textContent = formatMoney(grand);
-			}
+	const response = await fetch('{{ url_for("product.update_cart") }}', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			product_id: productId,
+			action: action
+		})
+	});
 
-			function sendUpdate(productId, action, quantity) {
-				const params = new URLSearchParams();
-				params.append('product_id', productId);
-				params.append('action', action);
-				if (typeof quantity !== 'undefined') params.append('quantity', quantity);
+	const data = await response.json();
 
-				return fetch('{{ url_for("product.update_cart") }}', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-						'X-Requested-With': 'XMLHttpRequest'
-					},
-					body: params.toString()
-				}).then(function (res) {
-					if (!res.ok) throw res;
-					return res.json();
-				});
-			}
-
-			// Delegated click handler for cart action buttons
-			cartBody.addEventListener('click', function (ev) {
-				const btn = ev.target.closest('.cart-action');
-				if (!btn) return;
-				ev.preventDefault();
-				const action = btn.dataset.action;
-				const productId = btn.dataset.productId;
-				if (!productId) return;
-
-				const tr = btn.closest('tr');
-				const qtyInput = tr.querySelector('.cart_quantity_input');
-				let qty = parseInt(qtyInput.value, 10) || 0;
-
-				if (action === 'increase') {
-					const oldQty = qty;
-					qty = oldQty + 1;
-					qtyInput.value = qty;
-					recalcTotals();
-					sendUpdate(productId, 'increase').catch(function () {
-						// rollback on error
-						qtyInput.value = oldQty;
-						recalcTotals();
-						alert('Lỗi server khi cập nhật giỏ hàng.');
-					});
-				} else if (action === 'decrease') {
-					if (qty <= 1) {
-						alert('Không được xoá sản phẩm cuối cùng bằng nút - .');
-						return;
-					}
-					const oldQty = qty;
-					qty = oldQty - 1;
-					qtyInput.value = qty;
-					recalcTotals();
-					sendUpdate(productId, 'decrease').catch(function () {
-						qtyInput.value = oldQty;
-						recalcTotals();
-						alert('Lỗi server khi cập nhật giỏ hàng.');
-					});
-				} else if (action === 'remove') {
-					// remove from UI immediately
-					const confirmDel = confirm('Xác nhận xoá sản phẩm khỏi giỏ hàng?');
-					if (!confirmDel) return;
-					tr.parentNode.removeChild(tr);
-					recalcTotals();
-					sendUpdate(productId, 'remove').catch(function () {
-						alert('Lỗi server khi xoá sản phẩm. Vui lòng reload trang.');
-					});
-				}
-			});
-
-			// initial totals calculation
-			recalcTotals();
-		});
-	</script>
+	if (data.success) {
+		location.reload();
+	} else {
+		alert(data.message);
+	}
+});
+</script>
 </body>
 </html>

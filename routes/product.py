@@ -68,93 +68,86 @@ def save_image(image):
 
 @product_bp.route('/add-to-cart', methods=['POST'])
 def add_to_cart():
-
-    data = request.get_json(silent=True) or {}
+    data = request.get_json() or {}
     product_id = data.get('id')
-
-    if not product_id:
-        return jsonify({
-            'success': False,
-            'message': 'Product ID is required.'
-        }), 400
 
     try:
         product_id = int(product_id)
-    except (ValueError, TypeError):
+    except (TypeError, ValueError):
         return jsonify({
             'success': False,
-            'message': 'Invalid product ID.'
+            'message': 'ID sản phẩm không hợp lệ.'
         }), 400
 
     conn = get_db_connection()
     cursor = conn.cursor()
+
     cursor.execute(
-        """
-        SELECT id, title, price
-        FROM `product`
-        WHERE id = %s
-        """,
+        "SELECT id FROM product WHERE id = %s",
         (product_id,)
     )
+
     product = cursor.fetchone()
+
     cursor.close()
     conn.close()
 
     if not product:
         return jsonify({
             'success': False,
-            'message': 'Product not found.'
+            'message': 'Không tìm thấy sản phẩm.'
         }), 404
 
     cart = add_product_to_cart(session, product_id)
 
     return jsonify({
         'success': True,
-        'message': 'Product added to cart.',
-        'cart_count': sum(cart.values()),
-        'product_id': product_id
+        'message': 'Đã thêm vào giỏ hàng.',
+        'cart_count': sum(cart.values())
     })
 
 
-@product_bp.route('/cart/update', methods=['GET', 'POST'])
+@product_bp.route('/cart/update', methods=['POST'])
 def update_cart():
+    data = request.get_json()
 
-    product_id = request.form.get('product_id') or request.args.get('product_id')
-    action = request.form.get('action') or request.args.get('action')
-    quantity = request.form.get('quantity') or request.args.get('quantity')
+    product_id = data.get('product_id')
+    action = data.get('action')
 
-    if product_id is None:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'success': False, 'message': 'Product ID is required.'}), 400
-        return redirect(url_for('product.cart'))
-
-    try:
-        product_id = int(product_id)
-    except (ValueError, TypeError):
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'success': False, 'message': 'Invalid product ID.'}), 400
-        return redirect(url_for('product.cart'))
-
-    if action == 'remove':
-        remove_product_from_cart(session, product_id)
-    elif action == 'increase':
-        current_quantity = get_cart(session).get(str(product_id), 0) + 1
-        update_cart_item(session, product_id, current_quantity)
-    elif action == 'decrease':
-        current_quantity = get_cart(session).get(str(product_id), 0) - 1
-        update_cart_item(session, product_id, current_quantity)
-    else:
-        update_cart_item(session, product_id, quantity)
-
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    if not product_id:
         return jsonify({
-            'success': True,
-            'message': 'Cart updated.',
-            'cart_count': sum(get_cart(session).values()),
-        })
+            'success': False,
+            'message': 'Không tìm thấy sản phẩm.'
+        }), 400
 
-    return redirect(url_for('product.cart'))
+    cart = get_cart(session)
+    quantity = cart.get(str(product_id), 0)
 
+    if action == 'increase':
+        update_cart_item(session, product_id, quantity + 1)
+
+    elif action == 'decrease':
+        if quantity <= 1:
+            return jsonify({
+                'success': False,
+                'message': 'Số lượng nhỏ nhất là 1.'
+            }), 400
+
+        update_cart_item(session, product_id, quantity - 1)
+
+    elif action == 'remove':
+        remove_product_from_cart(session, product_id)
+
+    else:
+        return jsonify({
+            'success': False,
+            'message': 'Hành động không hợp lệ.'
+        }), 400
+
+    return jsonify({
+        'success': True,
+        'cart_count': sum(get_cart(session).values())
+    })
 
 @product_bp.route('/cart')
 @product_bp.route('/cart.html')
