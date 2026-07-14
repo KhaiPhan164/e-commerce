@@ -945,52 +945,62 @@
 	<script src="{{ url_for('static', filename='js/price-range.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.prettyPhoto.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>
-        $(function() {
-            function showCartMessage(message) {
-                var alertBox = $('#ajax-cart-alert');
-                if (!alertBox.length) {
-                    alertBox = $(
-                        '<div id="ajax-cart-alert" class="alert alert-success text-center" ' +
-                        'style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: none; min-width: 220px;"' +
-                        '></div>'
-                    );
-                    $('body').append(alertBox);
-                }
+	<script>
+		// Vanilla JS delegated handler for add-to-cart
+		document.addEventListener('DOMContentLoaded', function () {
+			function showCartMessage(message) {
+				var alertBox = document.getElementById('ajax-cart-alert');
+				if (!alertBox) {
+					alertBox = document.createElement('div');
+					alertBox.id = 'ajax-cart-alert';
+					alertBox.className = 'alert alert-success text-center';
+					alertBox.style.position = 'fixed';
+					alertBox.style.top = '20px';
+					alertBox.style.right = '20px';
+					alertBox.style.zIndex = '9999';
+					alertBox.style.display = 'none';
+					alertBox.style.minWidth = '220px';
+					document.body.appendChild(alertBox);
+				}
 
-                alertBox.text(message).fadeIn(200).delay(1200).fadeOut(200);
-            }
+				alertBox.textContent = message;
+				alertBox.style.opacity = 0;
+				alertBox.style.display = 'block';
+				var t = 0;
+				var fadeIn = setInterval(function () { t += 0.1; alertBox.style.opacity = Math.min(t,1); if (t>=1) clearInterval(fadeIn); }, 20);
+				setTimeout(function () {
+					var t2 = 1;
+					var fadeOut = setInterval(function () { t2 -= 0.1; alertBox.style.opacity = Math.max(t2,0); if (t2<=0) { clearInterval(fadeOut); alertBox.style.display = 'none'; } }, 20);
+				}, 1200);
+			}
 
-            $('.add-to-cart[data-product-id]').on('click', function(event) {
-                event.preventDefault();
-                var button = $(this);
-                var productId = button.data('product-id');
+			document.body.addEventListener('click', function (ev) {
+				var el = ev.target.closest('.add-to-cart[data-product-id]');
+				if (!el) return;
+				ev.preventDefault();
+				var productId = el.getAttribute('data-product-id');
+				if (!productId) { showCartMessage('Không tìm thấy sản phẩm.'); return; }
 
-                if (!productId) {
-                    showCartMessage('Không tìm thấy sản phẩm.');
-                    return;
-                }
-
-                $.ajax({
-                    url: "{{ url_for('product.add_to_cart') }}",
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ id: productId }),
-                    success: function(response) {
-                        if (response.success) {
-                            showCartMessage('Đã thêm vào giỏ hàng.');
-                            button.text('Added').addClass('btn-success').removeClass('btn-default');
-                        } else {
-                            showCartMessage(response.message || 'Lỗi khi thêm sản phẩm.');
-                        }
-                    },
-                    error: function(xhr) {
-                        var response = xhr.responseJSON || {};
-                        showCartMessage(response.message || 'Lỗi server, thử lại sau.');
-                    }
-                });
-            });
-        });
-    </script>
+				fetch('{{ url_for("product.add_to_cart") }}', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+					body: JSON.stringify({ id: productId })
+				}).then(function (res) {
+					return res.json();
+				}).then(function (data) {
+					if (data && data.success) {
+						showCartMessage('Đã thêm vào giỏ hàng.');
+						el.textContent = 'Added';
+						el.classList.add('btn-success');
+						el.classList.remove('btn-default');
+					} else {
+						showCartMessage((data && data.message) || 'Lỗi khi thêm sản phẩm.');
+					}
+				}).catch(function () {
+					showCartMessage('Lỗi server, thử lại sau.');
+				});
+			});
+		});
+	</script>
 </body>
 </html>

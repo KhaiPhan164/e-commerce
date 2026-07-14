@@ -808,3 +808,29 @@
     </script>
 </body>
 </html>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		document.body.addEventListener('click', function (ev) {
+			var el = ev.target.closest('.add-to-cart[data-product-id], .add-to-cart[data-product-id] *');
+			if (!el) return;
+			// normalize to element with attribute
+			while (el && !el.getAttribute) el = el.parentNode;
+			while (el && !el.getAttribute('data-product-id')) el = el.parentNode;
+			if (!el) return;
+			ev.preventDefault();
+			var productId = el.getAttribute('data-product-id');
+			if (!productId) return;
+			fetch('{{ url_for("product.add_to_cart") }}', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+				body: JSON.stringify({ id: productId })
+			}).then(function (res) { return res.json(); }).then(function (data) {
+				if (data && data.success) {
+					alert('Đã thêm vào giỏ hàng.');
+				} else {
+					alert((data && data.message) || 'Lỗi khi thêm sản phẩm.');
+				}
+			}).catch(function () { alert('Lỗi server, thử lại sau.'); });
+		});
+	});
+</script>
