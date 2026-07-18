@@ -2,6 +2,22 @@
 <html lang="en">
 
 <head>
+	<style>
+    #cart-count {
+        display: inline-block;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        margin-left: 3px;
+        border-radius: 10px;
+        background: #fe980f;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 20px;
+        text-align: center;
+    }
+</style>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="">
@@ -93,7 +109,15 @@
 								<li><a href=""><i class="fa fa-user"></i> Account</a></li>
 								<li><a href=""><i class="fa fa-star"></i> Wishlist</a></li>
 								<li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
-								<li><a href="{{ url_for('product.cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+								<li>
+									<a href="{{ url_for('product.cart') }}">
+										<i class="fa fa-shopping-cart"></i>
+										Cart
+										<span id="cart-count" class="cart-count">
+											{{ cart_count }}
+										</span>
+									</a>
+								</li>
 								<li><a href="{{ url_for('login.login') }}"><i class="fa fa-lock"></i> Login</a></li>
 							</ul>
 						</div>
@@ -123,7 +147,13 @@
 										<li><a href="shop.html">Products</a></li>
 										<li><a href="product-details.html">Product Details</a></li>
 										<li><a href="checkout.html">Checkout</a></li>
-										<li><a href="{{ url_for('product.cart') }}">Cart</a></li>
+										<li>
+    <a href="{{ url_for('product.cart') }}">
+        <i class="fa fa-shopping-cart"></i>
+        Cart
+        <span id="cart-count">{{ cart_count }}</span>
+    </a>
+</li>
 										<li><a href="login.html">Login</a></li>
 									</ul>
 								</li>
@@ -995,33 +1025,63 @@
 	<script src="{{ url_for('static', filename='js/jquery.prettyPhoto.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 	<script>
-		document.body.addEventListener('click', async function (e) {
-			const button = e.target.closest('.add-to-cart[data-product-id]');
+    document.body.addEventListener('click', async function (e) {
+        const button = e.target.closest(
+            '.add-to-cart[data-product-id]'
+        );
 
-			if (!button) return;
+        if (!button) {
+            return;
+        }
 
-			e.preventDefault();
+        e.preventDefault();
 
-			const id = button.dataset.productId;
+        const productId = button.dataset.productId;
 
-			const response = await fetch('{{ url_for("product.add_to_cart") }}', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ id })
-			});
+        const response = await fetch(
+            '{{ url_for("product.add_to_cart") }}',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: productId
+                })
+            }
+        );
 
-			const data = await response.json();
+        const data = await response.json();
 
-			if (data.success) {
-				alert(data.message);
-				button.innerHTML = '<i class="fa fa-shopping-cart"></i> Added';
-			} else {
-				alert(data.message);
-			}
-		});
-	</script>
+        if (response.status === 401) {
+            alert(data.message);
+
+            window.location.href =
+                '{{ url_for("login.login") }}';
+
+            return;
+        }
+
+        if (data.success) {
+            const cartCount =
+                document.getElementById('cart-count');
+
+            cartCount.textContent = data.cart_count;
+
+            button.innerHTML =
+                '<i class="fa fa-check"></i> Added';
+
+            setTimeout(function () {
+                button.innerHTML =
+                    '<i class="fa fa-shopping-cart"></i> Add to cart';
+            }, 1000);
+        } else {
+            alert(data.message);
+        }
+    });
+</script>
+
+
 </body>
 
 </html>

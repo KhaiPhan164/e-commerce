@@ -291,10 +291,6 @@
 				<div class="col-sm-6">
 					<div class="total_area">
 						<ul>
-							<li>Cart Sub Total <span id="cart-subtotal">${{ "%.2f"|format(cart_total) }}</span></li>
-							<li>Tax <span id="cart-tax">${{ "%.2f"|format(tax) }}</span></li>
-							<li>Shipping Cost <span id="cart-shipping">{% if shipping_cost == 0 %}Free{% else %}${{
-									"%.2f"|format(shipping_cost) }}{% endif %}</span></li>
 							<li>Total <span id="cart-grand">${{ "%.2f"|format(grand_total) }}</span></li>
 						</ul>
 						<a class="btn btn-default update" href="{{ url_for('product.cart') }}">Refresh</a>
