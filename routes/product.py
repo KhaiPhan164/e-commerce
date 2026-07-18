@@ -31,12 +31,6 @@ product_bp = Blueprint('product', __name__)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 
-def require_login():
-    if 'user_id' not in session:
-        return False
-    return True
-
-
 def allowed_file(filename):
     return (
         '.' in filename
@@ -74,13 +68,7 @@ def save_image(image):
 
 @product_bp.route('/add-to-cart', methods=['POST'])
 def add_to_cart():
-    if not require_login():
-        return jsonify({
-            'success': False,
-            'message': 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.'
-        }), 401
-
-    data = request.get_json(silent=True) or {}
+    data = request.get_json() or {}
     product_id = data.get('id')
 
     try:
@@ -121,13 +109,7 @@ def add_to_cart():
 
 @product_bp.route('/cart/update', methods=['POST'])
 def update_cart():
-    if not require_login():
-        return jsonify({
-            'success': False,
-            'message': 'Bạn cần đăng nhập để thay đổi giỏ hàng.'
-        }), 401
-
-    data = request.get_json(silent=True) or {}
+    data = request.get_json()
 
     product_id = data.get('product_id')
     action = data.get('action')
