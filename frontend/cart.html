@@ -1,27 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title>Cart | E-Shopper</title>
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/prettyPhoto.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/price-range.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
+	<style>
+    #cart-count {
+        display: inline-block;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        margin-left: 3px;
+        border-radius: 10px;
+        background: #fe980f;
+        color: white;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 20px;
+        text-align: center;
+    }
+</style>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Cart | E-Shopper</title>
+	<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/prettyPhoto.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/price-range.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet">
-    <!--[if lt IE 9]>
+	<!--[if lt IE 9]>
     <script src="{{ url_for('static', filename='js/html5shiv.js') }}"></script>
     <script src="{{ url_for('static', filename='js/respond.min.js') }}"></script>
-    <![endif]-->       
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico/favicon.ico') }}">
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ url_for('static', filename='images/ico/apple-touch-icon-144-precomposed.png') }}">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ url_for('static', filename='images/ico/apple-touch-icon-114-precomposed.png') }}">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ url_for('static', filename='images/ico/apple-touch-icon-72-precomposed.png') }}">
-    <link rel="apple-touch-icon-precomposed" href="{{ url_for('static', filename='images/ico/apple-touch-icon-57-precomposed.png') }}">
+    <![endif]-->
+	<link rel="shortcut icon" href="{{ url_for('static', filename='images/ico/favicon.ico') }}">
+	<link rel="apple-touch-icon-precomposed" sizes="144x144"
+		href="{{ url_for('static', filename='images/ico/apple-touch-icon-144-precomposed.png') }}">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114"
+		href="{{ url_for('static', filename='images/ico/apple-touch-icon-114-precomposed.png') }}">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72"
+		href="{{ url_for('static', filename='images/ico/apple-touch-icon-72-precomposed.png') }}">
+	<link rel="apple-touch-icon-precomposed"
+		href="{{ url_for('static', filename='images/ico/apple-touch-icon-57-precomposed.png') }}">
 </head><!--/head-->
 
 <body>
@@ -51,7 +72,7 @@
 				</div>
 			</div>
 		</div><!--/header_top-->
-		
+
 		<div class="header-middle"><!--header-middle-->
 			<div class="container">
 				<div class="row">
@@ -61,7 +82,8 @@
 						</div>
 						<div class="btn-group pull-right clearfix">
 							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
+								<button type="button" class="btn btn-default dropdown-toggle usa"
+									data-toggle="dropdown">
 									USA
 									<span class="caret"></span>
 								</button>
@@ -70,9 +92,10 @@
 									<li><a href="">UK</a></li>
 								</ul>
 							</div>
-							
+
 							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
+								<button type="button" class="btn btn-default dropdown-toggle usa"
+									data-toggle="dropdown">
 									DOLLAR
 									<span class="caret"></span>
 								</button>
@@ -89,7 +112,14 @@
 								<li><a href=""><i class="fa fa-user"></i> Account</a></li>
 								<li><a href=""><i class="fa fa-star"></i> Wishlist</a></li>
 								<li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
-								<li><a href="{{ url_for('product.cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+								<li>
+    <a href="{{ url_for('product.cart') }}">
+        <i class="fa fa-shopping-cart"></i>
+        Cart
+        <span id="cart-count">{{ cart_count }}</span>
+    </a>
+</li>
+								</li>
 								<li><a href="login.html"><i class="fa fa-lock"></i> Login</a></li>
 							</ul>
 						</div>
@@ -97,13 +127,14 @@
 				</div>
 			</div>
 		</div><!--/header-middle-->
-	
+
 		<div class="header-bottom"><!--header-bottom-->
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-9">
 						<div class="navbar-header">
-							<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+							<button type="button" class="navbar-toggle" data-toggle="collapse"
+								data-target=".navbar-collapse">
 								<span class="sr-only">Toggle navigation</span>
 								<span class="icon-bar"></span>
 								<span class="icon-bar"></span>
@@ -114,20 +145,20 @@
 							<ul class="nav navbar-nav collapse navbar-collapse">
 								<li><a href="{{ url_for('index.index') }}">Home</a></li>
 								<li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
-                                    <ul role="menu" class="sub-menu">
-                                        <li><a href="shop.html">Products</a></li>
-										<li><a href="product-details.html">Product Details</a></li> 
-										<li><a href="checkout.html">Checkout</a></li> 
-										<li><a href="{{ url_for('product.cart') }}" class="active">Cart</a></li> 
-										<li><a href="login.html">Login</a></li> 
-                                    </ul>
-                                </li> 
+									<ul role="menu" class="sub-menu">
+										<li><a href="shop.html">Products</a></li>
+										<li><a href="product-details.html">Product Details</a></li>
+										<li><a href="checkout.html">Checkout</a></li>
+										<li><a href="{{ url_for('product.cart') }}" class="active">Cart</a></li>
+										<li><a href="login.html">Login</a></li>
+									</ul>
+								</li>
 								<li class="dropdown"><a href="#">Blog<i class="fa fa-angle-down"></i></a>
-                                    <ul role="menu" class="sub-menu">
-                                        <li><a href="blog.html">Blog List</a></li>
+									<ul role="menu" class="sub-menu">
+										<li><a href="blog.html">Blog List</a></li>
 										<li><a href="blog-single.html">Blog Single</a></li>
-                                    </ul>
-                                </li> 
+									</ul>
+								</li>
 								<li><a href="404.html">404</a></li>
 								<li><a href="contact-us.html">Contact</a></li>
 							</ul>
@@ -135,7 +166,7 @@
 					</div>
 					<div class="col-sm-3">
 						<div class="search_box pull-right">
-							<input type="text" placeholder="Search"/>
+							<input type="text" placeholder="Search" />
 						</div>
 					</div>
 				</div>
@@ -147,8 +178,8 @@
 		<div class="container">
 			<div class="breadcrumbs">
 				<ol class="breadcrumb">
-				  <li><a href="{{ url_for('index.index') }}">Home</a></li>
-				  <li class="active">Shopping Cart</li>
+					<li><a href="{{ url_for('index.index') }}">Home</a></li>
+					<li class="active">Shopping Cart</li>
 				</ol>
 			</div>
 			<div class="table-responsive cart_info">
@@ -170,9 +201,11 @@
 							<td class="cart_product">
 								<a href="#">
 									{% if item.image %}
-										<img src="{{ url_for('static', filename='uploads/products/' ~ item.image) }}" alt="{{ item.title }}">
+									<img src="{{ url_for('static', filename='uploads/products/' ~ item.image) }}"
+										alt="{{ item.title }}">
 									{% else %}
-										<img src="{{ url_for('static', filename='images/cart/one.png') }}" alt="{{ item.title }}">
+									<img src="{{ url_for('static', filename='images/cart/one.png') }}"
+										alt="{{ item.title }}">
 									{% endif %}
 								</a>
 							</td>
@@ -185,23 +218,27 @@
 							</td>
 							<td class="cart_quantity">
 								<div class="cart_quantity_button">
-									<a class="cart_quantity_up cart-action" href="#" data-product-id="{{ item.id }}" data-action="increase"> + </a>
-									<input class="cart_quantity_input" type="text" name="quantity" value="{{ item.quantity }}" autocomplete="off" size="2" readonly>
-									<a class="cart_quantity_down cart-action" href="#" data-product-id="{{ item.id }}" data-action="decrease"> - </a>
+									<a class="cart_quantity_up cart-action" href="#" data-product-id="{{ item.id }}"
+										data-action="increase"> + </a>
+									<input class="cart_quantity_input" type="text" name="quantity"
+										value="{{ item.quantity }}" autocomplete="off" size="2" readonly>
+									<a class="cart_quantity_down cart-action" href="#" data-product-id="{{ item.id }}"
+										data-action="decrease"> - </a>
 								</div>
 							</td>
 							<td class="cart_total">
 								<p class="cart_total_price">${{ "%.2f"|format(item.subtotal) }}</p>
 							</td>
 							<td class="cart_delete">
-								<a class="cart_quantity_delete cart-action" href="#" data-product-id="{{ item.id }}" data-action="remove"><i class="fa fa-times"></i></a>
+								<a class="cart_quantity_delete cart-action" href="#" data-product-id="{{ item.id }}"
+									data-action="remove"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
 						{% endfor %}
 					</tbody>
 				</table>
 				{% else %}
-					<div class="alert alert-info">Giỏ hàng của bạn đang trống.</div>
+				<div class="alert alert-info">Giỏ hàng của bạn đang trống.</div>
 				{% endif %}
 			</div>
 		</div>
@@ -211,7 +248,8 @@
 		<div class="container">
 			<div class="heading">
 				<h3>What would you like to do next?</h3>
-				<p>Choose if you have a discount code or reward points you want to use or would like to estimate your delivery cost.</p>
+				<p>Choose if you have a discount code or reward points you want to use or would like to estimate your
+					delivery cost.</p>
 			</div>
 			<div class="row">
 				<div class="col-sm-6">
@@ -243,7 +281,7 @@
 									<option>Canada</option>
 									<option>Dubai</option>
 								</select>
-								
+
 							</li>
 							<li class="single_field">
 								<label>Region / State:</label>
@@ -257,7 +295,7 @@
 									<option>Canada</option>
 									<option>Dubai</option>
 								</select>
-							
+
 							</li>
 							<li class="single_field zip-field">
 								<label>Zip Code:</label>
@@ -271,14 +309,21 @@
 				<div class="col-sm-6">
 					<div class="total_area">
 						<ul>
-							<li>Cart Sub Total <span id="cart-subtotal">${{ "%.2f"|format(cart_total) }}</span></li>
-							<li>Tax <span id="cart-tax">${{ "%.2f"|format(tax) }}</span></li>
-							<li>Shipping Cost <span id="cart-shipping">{% if shipping_cost == 0 %}Free{% else %}${{
-									"%.2f"|format(shipping_cost) }}{% endif %}</span></li>
-							<li>Total <span id="cart-grand">${{ "%.2f"|format(grand_total) }}</span></li>
+							<li>
+								Total
+								<span id="cart-grand">
+									${{ "%.2f"|format(grand_total) }}
+								</span>
+							</li>
 						</ul>
-						<a class="btn btn-default update" href="{{ url_for('product.cart') }}">Refresh</a>
-						<a class="btn btn-default check_out" href="{{ url_for('product.cart') }}">Check Out</a>
+
+						<a class="btn btn-default update" href="{{ url_for('product.cart') }}">
+							Refresh
+						</a>
+
+						<a class="btn btn-default check_out" href="#">
+							Check Out
+						</a>
 					</div>
 				</div>
 			</div>
@@ -310,7 +355,7 @@
 								<h2>24 DEC 2014</h2>
 							</div>
 						</div>
-						
+
 						<div class="col-sm-3">
 							<div class="video-gallery text-center">
 								<a href="#">
@@ -325,7 +370,7 @@
 								<h2>24 DEC 2014</h2>
 							</div>
 						</div>
-						
+
 						<div class="col-sm-3">
 							<div class="video-gallery text-center">
 								<a href="#">
@@ -340,7 +385,7 @@
 								<h2>24 DEC 2014</h2>
 							</div>
 						</div>
-						
+
 						<div class="col-sm-3">
 							<div class="video-gallery text-center">
 								<a href="#">
@@ -365,7 +410,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="footer-widget">
 			<div class="container">
 				<div class="row">
@@ -422,70 +467,175 @@
 							<h2>About Shopper</h2>
 							<form action="#" class="searchform">
 								<input type="text" placeholder="Your email address" />
-								<button type="submit" class="btn btn-default"><i class="fa fa-arrow-circle-o-right"></i></button>
+								<button type="submit" class="btn btn-default"><i
+										class="fa fa-arrow-circle-o-right"></i></button>
 								<p>Get the most recent updates from <br />our site and be updated your self...</p>
 							</form>
 						</div>
 					</div>
-					
+
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="footer-bottom">
 			<div class="container">
 				<div class="row">
 					<p class="pull-left">Copyright © 2013 E-SHOPPER Inc. All rights reserved.</p>
-					<p class="pull-right">Designed by <span><a target="_blank" href="http://www.themeum.com">Themeum</a></span></p>
+					<p class="pull-right">Designed by <span><a target="_blank"
+								href="http://www.themeum.com">Themeum</a></span></p>
 				</div>
 			</div>
 		</div>
-		
+
 	</footer><!--/Footer-->
-	
 
 
-    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+
+	<script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/jquery.scrollUp.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery.prettyPhoto.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.prettyPhoto.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 	<script>
-document.querySelector('.cart_info').addEventListener('click', async function(e) {
-	const button = e.target.closest('.cart-action');
+    const cartInfo = document.querySelector('.cart_info');
 
-	if (!button) return;
+    if (cartInfo) {
+        cartInfo.addEventListener('click', async function (e) {
+            const button = e.target.closest('.cart-action');
 
-	e.preventDefault();
+            if (!button) return;
 
-	const productId = button.dataset.productId;
-	const action = button.dataset.action;
+            e.preventDefault();
 
-	if (action === 'remove') {
-		const check = confirm('Xác nhận xoá sản phẩm khỏi giỏ hàng?');
+            const productId = button.dataset.productId;
+            const action = button.dataset.action;
+            const row = button.closest('tr');
 
-		if (!check) return;
-	}
+            if (action === 'remove') {
+                const check = confirm(
+                    'Xác nhận xoá sản phẩm khỏi giỏ hàng?'
+                );
 
-	const response = await fetch('{{ url_for("product.update_cart") }}', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-			product_id: productId,
-			action: action
-		})
-	});
+                if (!check) return;
+            }
 
-	const data = await response.json();
+            // Tạm khóa nút để tránh người dùng bấm liên tục
+            button.style.pointerEvents = 'none';
+            button.style.opacity = '0.5';
 
-	if (data.success) {
-		location.reload();
-	} else {
-		alert(data.message);
-	}
-});
+            try {
+                const response = await fetch(
+                    '{{ url_for("product.update_cart") }}',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            action: action
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    window.location.href =
+                        '{{ url_for("login.login") }}';
+
+                    return;
+                }
+
+                if (!data.success) {
+                    alert(
+                        data.message ||
+                        'Không thể thay đổi giỏ hàng.'
+                    );
+
+                    return;
+                }
+
+                // Cập nhật tổng quantity trên icon Cart
+                const cartCount =
+                    document.getElementById('cart-count');
+
+                if (cartCount) {
+                    cartCount.textContent = data.cart_count;
+                }
+
+                // Cập nhật tổng tiền toàn bộ giỏ hàng
+                const grandTotal =
+                    document.getElementById('cart-grand');
+
+                if (grandTotal) {
+                    grandTotal.textContent =
+                        '$' + data.grand_total;
+                }
+
+                // Nếu có Cart Sub Total thì cập nhật luôn
+                const cartSubtotal =
+                    document.getElementById('cart-subtotal');
+
+                if (cartSubtotal) {
+                    cartSubtotal.textContent =
+                        '$' + data.grand_total;
+                }
+
+                if (action === 'remove') {
+                    // Xóa dòng sản phẩm khỏi giao diện
+                    row.remove();
+
+                    const remainingRows =
+                        document.querySelectorAll(
+                            '.cart_info tbody tr'
+                        );
+
+                    // Nếu không còn sản phẩm nào
+                    if (remainingRows.length === 0) {
+                        cartInfo.innerHTML = `
+                            <div class="alert alert-info">
+                                Giỏ hàng của bạn đang trống.
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Cập nhật ô quantity
+                    const quantityInput =
+                        row.querySelector(
+                            '.cart_quantity_input'
+                        );
+
+                    if (quantityInput) {
+                        quantityInput.value = data.quantity;
+                    }
+
+                    // Cập nhật subtotal của sản phẩm
+                    const subtotalElement =
+                        row.querySelector(
+                            '.cart_total_price'
+                        );
+
+                    if (subtotalElement) {
+                        subtotalElement.textContent =
+                            '$' + data.subtotal;
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+
+                alert(
+                    'Có lỗi kết nối. Vui lòng thử lại.'
+                );
+            } finally {
+                button.style.pointerEvents = '';
+                button.style.opacity = '';
+            }
+        });
+    }
 </script>
 </body>
+
 </html>
